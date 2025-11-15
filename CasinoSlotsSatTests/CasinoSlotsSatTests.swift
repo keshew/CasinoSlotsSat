@@ -1,10 +1,3 @@
-//
-//  CasinoSlotsSatTests.swift
-//  CasinoSlotsSatTests
-//
-//  Created by Артём Коротков on 15.11.2025.
-//
-
 import XCTest
 @testable import CasinoSlotsSat
 

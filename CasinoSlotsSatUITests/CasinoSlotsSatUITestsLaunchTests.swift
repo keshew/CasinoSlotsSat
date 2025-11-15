@@ -1,10 +1,3 @@
-//
-//  CasinoSlotsSatUITestsLaunchTests.swift
-//  CasinoSlotsSatUITests
-//
-//  Created by Артём Коротков on 15.11.2025.
-//
-
 import XCTest
 
 final class CasinoSlotsSatUITestsLaunchTests: XCTestCase {
