@@ -11,7 +11,7 @@ class HookSlotsViewModel: ObservableObject {
     @Published var isWin = false
     @Published var win = 0
     var spinningTimer: Timer?
-    
+    @ObservedObject private var soundManager = SoundManager.shared
     init() {
         resetSlots()
     }
@@ -41,12 +41,16 @@ class HookSlotsViewModel: ObservableObject {
     }
     
     func spin() {
+        UserDefaultsManager.shared.game2Played = true
+        UserDefaultsManager.shared.incrementTotalGames()
+        UserDefaultsManager.shared.incrementSpins()
         UserDefaultsManager.shared.removeCoins(bet)
         coin =  UserDefaultsManager.shared.coins
         isSpinning = true
         spinningTimer?.invalidate()
         winningPositions.removeAll()
         win = 0
+        soundManager.playSlot1()
         let columns = 5
         for col in 0..<columns {
             let delay = Double(col) * 0.4
@@ -63,6 +67,7 @@ class HookSlotsViewModel: ObservableObject {
                         timer.invalidate()
                         if col == columns - 1 {
                             self.isSpinning = false
+                            self.soundManager.stopSlot()
                             self.checkWin()
                             
                         }

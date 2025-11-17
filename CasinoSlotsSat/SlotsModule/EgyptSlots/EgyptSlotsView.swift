@@ -27,6 +27,7 @@ struct EgyptSlotsView: View {
                             VStack(spacing: 10) {
                                 HStack {
                                     Button(action: {
+                                        NotificationCenter.default.post(name: Notification.Name("UserResourcesUpdated"), object: nil)
                                         presentationMode.wrappedValue.dismiss()
                                     }) {
                                         Image(.back)
@@ -133,7 +134,7 @@ struct EgyptSlotsView: View {
                             .frame(height: 276)
                             .cornerRadius(18)
                             .padding(.horizontal)
-                            .padding(.top)
+                            .padding(.top, UIScreen.main.bounds.width > 700 ? 50 : 20)
                         
                         Rectangle()
                             .fill(LinearGradient(colors: [Color(red: 22/255, green: 26/255, blue: 40/255).opacity(0.7),
@@ -244,6 +245,7 @@ struct EgyptSlotsView: View {
                         
                         Color.clear.frame(height: 60)
                     }
+                
                 }
             }
             

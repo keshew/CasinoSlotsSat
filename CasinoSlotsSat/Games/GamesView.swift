@@ -3,6 +3,12 @@ import SwiftUI
 struct GamesView: View {
     @StateObject var gamesModel =  GamesViewModel()
     @State var showAlert = false
+    @State var isSlot1 = false
+    @State var isSlot2 = false
+    @State var isSlot3 = false
+    @State var coins = UserDefaultsManager.shared.coins
+    @State var isProfile = false
+    @State var isSet = false
     
     var body: some View {
         ZStack {
@@ -28,7 +34,7 @@ struct GamesView: View {
                             VStack(spacing: 10) {
                                 HStack {
                                     Button(action: {
-                                        
+                                        isProfile = true
                                     }) {
                                         Image(.profile)
                                             .resizable()
@@ -41,7 +47,7 @@ struct GamesView: View {
                                         .frame(width: 120, height: 42)
                                     Spacer()
                                     Button(action: {
-                                        
+                                        isSet = true
                                     }) {
                                         Image(.settings)
                                             .resizable()
@@ -58,10 +64,10 @@ struct GamesView: View {
                                             RoundedRectangle(cornerRadius: 24)
                                                 .stroke(.white)
                                                 .overlay {
-                                                    Text("1000")
+                                                    Text("\(coins)")
                                                         .font(.custom("PaytoneOne-Regular", size: 18))
                                                         .foregroundStyle(Color(red: 253/255, green: 255/255, blue: 193/255))
-                                                        .offset(x: 8, y: -1)
+                                                        .offset(x: 11, y: -1)
                                                 }
                                         }
                                         .frame(width: 90, height: 31)
@@ -85,8 +91,8 @@ struct GamesView: View {
                     VStack(spacing: -20) {
                         VStack(spacing: 0) {
                             HStack {
-                                
                                 Button(action: {
+                                    isSlot1 = true
                                 }) {
                                     Image(.mini1)
                                         .resizable()
@@ -95,7 +101,7 @@ struct GamesView: View {
                                 }
                                 
                                 Button(action: {
-                                    
+                                    isSlot2 = true
                                 }) {
                                     Image(.mini2)
                                         .resizable()
@@ -105,8 +111,8 @@ struct GamesView: View {
                             }
                             
                             HStack {
-                                
                                 Button(action: {
+                                    isSlot3 = true
                                 }) {
                                     Image(.mini3)
                                         .resizable()
@@ -153,9 +159,29 @@ struct GamesView: View {
                         
                         Color.clear.frame(height: 60)
                     }
-                    .padding(.top)
+                    .padding(.top, UIScreen.main.bounds.width > 700 ? 50 : 20)
                 }
             }
+        }
+        .onAppear() {
+            NotificationCenter.default.addObserver(forName: Notification.Name("UserResourcesUpdated"), object: nil, queue: .main) { _ in
+                coins = UserDefaultsManager.shared.coins
+            }
+        }
+        .fullScreenCover(isPresented: $isProfile) {
+            ProfileView()
+        }
+        .fullScreenCover(isPresented: $isSet) {
+            SettingsView()
+        }
+        .fullScreenCover(isPresented: $isSlot1) {
+            MinesView()
+        }
+        .fullScreenCover(isPresented: $isSlot2) {
+            PlinkoView()
+        }
+        .fullScreenCover(isPresented: $isSlot3) {
+            WheelView()
         }
     }
 }

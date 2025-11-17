@@ -11,7 +11,7 @@ class LuckySlotsViewModel: ObservableObject {
     @Published var isWin = false
     @Published var win = 0
     var spinningTimer: Timer?
-    
+    @ObservedObject private var soundManager = SoundManager.shared
     init() {
         resetSlots()
     }
@@ -41,9 +41,13 @@ class LuckySlotsViewModel: ObservableObject {
     }
     
     func spin() {
+        UserDefaultsManager.shared.game3Played = true
+        UserDefaultsManager.shared.incrementTotalGames()
+        UserDefaultsManager.shared.incrementSpins()
         UserDefaultsManager.shared.removeCoins(bet)
         coin =  UserDefaultsManager.shared.coins
         isSpinning = true
+        soundManager.playSlot1()
         spinningTimer?.invalidate()
         winningPositions.removeAll()
         win = 0
@@ -63,6 +67,7 @@ class LuckySlotsViewModel: ObservableObject {
                         timer.invalidate()
                         if col == columns - 1 {
                             self.isSpinning = false
+                            self.soundManager.stopSlot()
                             self.checkWin()
                             
                         }

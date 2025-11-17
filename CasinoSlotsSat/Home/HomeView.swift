@@ -2,7 +2,14 @@ import SwiftUI
 
 struct HomeView: View {
     @StateObject var homeModel =  HomeViewModel()
-
+    @State var isSlot1 = false
+    @State var isSlot2 = false
+    @State var isMini1 = false
+    @State var isMini2 = false
+    @State var isProfile = false
+    @State var isSet = false
+    @State var coins = UserDefaultsManager.shared.coins
+    
     var body: some View {
         ZStack {
             ZStack(alignment: .top) {
@@ -18,7 +25,6 @@ struct HomeView: View {
             }
             .ignoresSafeArea()
             
-            
             VStack {
                 HStack {
                     Image(.topRect)
@@ -27,7 +33,7 @@ struct HomeView: View {
                             VStack(spacing: 10) {
                                 HStack {
                                     Button(action: {
-                                        
+                                        isProfile = true
                                     }) {
                                         Image(.profile)
                                             .resizable()
@@ -40,7 +46,7 @@ struct HomeView: View {
                                         .frame(width: 120, height: 42)
                                     Spacer()
                                     Button(action: {
-                                        
+                                        isSet = true
                                     }) {
                                         Image(.settings)
                                             .resizable()
@@ -57,10 +63,10 @@ struct HomeView: View {
                                             RoundedRectangle(cornerRadius: 24)
                                                 .stroke(.white)
                                                 .overlay {
-                                                    Text("1000")
+                                                    Text("\(coins)")
                                                         .font(.custom("PaytoneOne-Regular", size: 18))
                                                         .foregroundStyle(Color(red: 253/255, green: 255/255, blue: 193/255))
-                                                        .offset(x: 8, y: -1)
+                                                        .offset(x: 11, y: -1)
                                                 }
                                         }
                                         .frame(width: 90, height: 31)
@@ -90,6 +96,7 @@ struct HomeView: View {
                             HStack {
                                 
                                 Button(action: {
+                                    isSlot1 = true
                                 }) {
                                     Image(.slot1)
                                         .resizable()
@@ -98,7 +105,7 @@ struct HomeView: View {
                                 }
                                 
                                 Button(action: {
-                                    
+                                    isSlot2 = true
                                 }) {
                                     Image(.slot2)
                                         .resizable()
@@ -116,6 +123,7 @@ struct HomeView: View {
                         
                             HStack {
                                 Button(action: {
+                                    isMini1 = true
                                 }) {
                                     Image(.mini1)
                                         .resizable()
@@ -124,7 +132,7 @@ struct HomeView: View {
                                 }
                                 
                                 Button(action: {
-                                    
+                                    isMini2 = true
                                 }) {
                                     Image(.mini2)
                                         .resizable()
@@ -136,9 +144,32 @@ struct HomeView: View {
                         
                         Color.clear.frame(height: 60)
                     }
-                    .padding(.top)
+                    .padding(.top, UIScreen.main.bounds.width > 700 ? 50 : 20)
                 }
             }
+        }
+        .onAppear() {
+            NotificationCenter.default.addObserver(forName: Notification.Name("UserResourcesUpdated"), object: nil, queue: .main) { _ in
+                coins = UserDefaultsManager.shared.coins
+            }
+        }
+        .fullScreenCover(isPresented: $isProfile) {
+            ProfileView()
+        }
+        .fullScreenCover(isPresented: $isSet) {
+            SettingsView()
+        }
+        .fullScreenCover(isPresented: $isSlot1) {
+            HookSlotsView()
+        }
+        .fullScreenCover(isPresented: $isSlot2) {
+            EgyptSlotsView()
+        }
+        .fullScreenCover(isPresented: $isMini1) {
+            MinesView()
+        }
+        .fullScreenCover(isPresented: $isMini2) {
+            PlinkoView()
         }
     }
 }

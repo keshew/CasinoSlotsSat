@@ -4,6 +4,7 @@ struct ProfileView: View {
     @StateObject var profileModel =  ProfileViewModel()
     @State var showAlert = false
     @Environment(\.presentationMode) var presentationMode
+    @State var coins = UserDefaultsManager.shared.coins
     
     var body: some View {
         ZStack {
@@ -28,6 +29,7 @@ struct ProfileView: View {
                             VStack(spacing: 10) {
                                 HStack {
                                     Button(action: {
+                                        NotificationCenter.default.post(name: Notification.Name("UserResourcesUpdated"), object: nil)
                                         presentationMode.wrappedValue.dismiss()
                                     }) {
                                         Image(.back)
@@ -35,13 +37,16 @@ struct ProfileView: View {
                                             .frame(width: 41, height: 41)
                                     }
                                     .padding(.leading, 6)
+                                    
                                     Spacer()
+                                    
                                     Image(.profileLabel)
                                         .resizable()
                                         .aspectRatio(contentMode: .fit)
                                         .frame(width: 120, height: 42)
                                     
                                     Spacer()
+                                    
                                     Button(action: {
                                         
                                     }) {
@@ -61,10 +66,10 @@ struct ProfileView: View {
                                             RoundedRectangle(cornerRadius: 24)
                                                 .stroke(.white)
                                                 .overlay {
-                                                    Text("1000")
+                                                    Text("\(coins)")
                                                         .font(.custom("PaytoneOne-Regular", size: 18))
                                                         .foregroundStyle(Color(red: 253/255, green: 255/255, blue: 193/255))
-                                                        .offset(x: 8, y: -1)
+                                                        .offset(x: 11, y: -1)
                                                 }
                                         }
                                         .frame(width: 90, height: 31)
@@ -108,20 +113,23 @@ struct ProfileView: View {
                                                 Text("Player")
                                                     .font(.custom("PaytoneOne-Regular", size: 16))
                                                     .foregroundStyle(.white)
-                                                
                                             }
                                             
                                             HStack {
                                                 Image(systemName: "star")
                                                     .foregroundStyle(Color(red: 253/255, green: 198/255, blue: 0/255))
                                                 
-                                                Text("Level 1")
+                                                let level = UserDefaultsManager.shared.totalGames / 10 + 1
+                                                Text("Level \(level)")
                                                     .font(.custom("PaytoneOne-Regular", size: 12))
                                                     .foregroundStyle(.white)
                                             }
-
+                                            
                                             VStack(spacing: 10) {
                                                 GeometryReader { geometry in
+                                                    let currentProgress = UserDefaultsManager.shared.totalGames % 10
+                                                    let barWidth = geometry.size.width * CGFloat(currentProgress) / 10.0
+                                                    
                                                     ZStack(alignment: .leading) {
                                                         Rectangle()
                                                             .fill(.white.opacity(0.1))
@@ -130,13 +138,15 @@ struct ProfileView: View {
                                                         
                                                         Rectangle()
                                                             .fill(LinearGradient(colors: [Color(red: 253/255, green: 199/255, blue: 0/255),
-                                                                                          Color(red: 255/255, green: 137/255, blue: 2/255)], startPoint: .leading, endPoint: .trailing))
-                                                            .frame(width: 100, height: 8)
+                                                                                         Color(red: 255/255, green: 137/255, blue: 2/255)], startPoint: .leading, endPoint: .trailing))
+                                                            .frame(width: barWidth, height: 8)
                                                             .cornerRadius(10)
                                                     }
                                                 }
+                                                .frame(height: 8)
                                                 
-                                                Text("1/10 games to next level")
+                                                let currentProgressText = UserDefaultsManager.shared.totalGames % 10
+                                                Text("\(currentProgressText)/10 games to next level")
                                                     .font(.custom("PaytoneOne-Regular", size: 10))
                                                     .foregroundStyle(Color(red: 215/255, green: 211/255, blue: 222/255))
                                             }
@@ -162,7 +172,7 @@ struct ProfileView: View {
                                                     .aspectRatio(contentMode: .fit)
                                                     .frame(width: 38, height: 40)
                                                 
-                                                Text("0")
+                                                Text("\(UserDefaultsManager.shared.totalWins)")
                                                     .font(.custom("PaytoneOne-Regular", size: 24))
                                                     .foregroundStyle(Color(red: 0/255, green: 223/255, blue: 114/255))
                                                 
@@ -188,7 +198,7 @@ struct ProfileView: View {
                                                     .aspectRatio(contentMode: .fit)
                                                     .frame(width: 38, height: 40)
                                                 
-                                                Text("0")
+                                                Text("\(UserDefaultsManager.shared.totalGames)")
                                                     .font(.custom("PaytoneOne-Regular", size: 24))
                                                     .foregroundStyle(Color(red: 81/255, green: 161/255, blue: 255/255))
                                                 
@@ -217,7 +227,7 @@ struct ProfileView: View {
                                                     .aspectRatio(contentMode: .fit)
                                                     .frame(width: 38, height: 40)
                                                 
-                                                Text("0")
+                                                Text("\(UserDefaultsManager.shared.maxSingleWin)")
                                                     .font(.custom("PaytoneOne-Regular", size: 24))
                                                     .foregroundStyle(Color(red: 194/255, green: 122/255, blue: 255/255))
                                                 
@@ -243,7 +253,7 @@ struct ProfileView: View {
                                                     .aspectRatio(contentMode: .fit)
                                                     .frame(width: 38, height: 40)
                                                 
-                                                Text("0")
+                                                Text("\(UserDefaultsManager.shared.totalSpins)")
                                                     .font(.custom("PaytoneOne-Regular", size: 24))
                                                     .foregroundStyle(Color(red: 255/255, green: 136/255, blue: 2/255))
                                                 
@@ -285,7 +295,7 @@ struct ProfileView: View {
                         }
                         .alert("Attention", isPresented: $showAlert) {
                             Button("OK") {
-                                
+                                UserDefaultsManager.shared.resetAllData()
                             }
                             Button("Cancel", role: .cancel) {
                                 
@@ -295,7 +305,7 @@ struct ProfileView: View {
                         }
                         Color.clear.frame(height: 60)
                     }
-                    .padding(.top)
+                    .padding(.top, UIScreen.main.bounds.width > 700 ? 50 : 20)
                 }
             }
         }

@@ -10,15 +10,28 @@ struct Achiev: Identifiable, Codable {
     var isUnlocked: Bool {
         currentGoal >= goal
     }
+    var award: Int
 }
 
 struct AwardsView: View {
     @StateObject var awardsModel =  AwardsViewModel()
-    let achiev = [Achiev(imageName: "award1", name: "Slot Explorer", desc: "Try all 4 slot machines", goal: 4, currentGoal: 0),
-                  Achiev(imageName: "award2", name: "High Roller", desc: "Win 10,000 coins in total", goal: 10000, currentGoal: 0),
-                  Achiev(imageName: "award3", name: "Lucky Streak", desc: "Win 1,000 coins in a single spin", goal: 1000, currentGoal: 0),
-                  Achiev(imageName: "award4", name: "Dedicated Player", desc: "Play 100 games", goal: 100, currentGoal: 0),
-                  Achiev(imageName: "award5", name: "Spin Master", desc: "Make 500 spins", goal: 500, currentGoal: 0)]
+    @State var achiev = [Achiev(imageName: "award1", name: "Slot Explorer", desc: "Try all 4 slot machines", goal: 4, currentGoal: 0, award: 200),
+                  Achiev(imageName: "award2", name: "High Roller", desc: "Win 10,000 coins in total", goal: 10000, currentGoal: 0, award: 500),
+                  Achiev(imageName: "award3", name: "Lucky Streak", desc: "Win 1,000 coins in a single spin", goal: 1000, currentGoal: 0, award: 1000),
+                  Achiev(imageName: "award4", name: "Dedicated Player", desc: "Play 100 games", goal: 100, currentGoal: 0, award: 300),
+                  Achiev(imageName: "award5", name: "Spin Master", desc: "Make 500 spins", goal: 500, currentGoal: 0, award: 500)]
+    @State var coins = UserDefaultsManager.shared.coins
+    @State var isProfile = false
+    @State var isSet = false
+    
+    func updateAchievementsProgress() {
+        achiev[0].currentGoal = UserDefaultsManager.shared.allFourGamesPlayed ? 4 : 0
+        achiev[1].currentGoal = min(UserDefaultsManager.shared.totalWins, 10000)
+        achiev[2].currentGoal = UserDefaultsManager.shared.hasWon1000Once ? 1000 : 0
+        achiev[3].currentGoal = min(UserDefaultsManager.shared.totalGames, 100)
+        achiev[4].currentGoal = min(UserDefaultsManager.shared.totalSpins, 500)
+        coins = UserDefaultsManager.shared.coins
+    }
     
     var body: some View {
         ZStack {
@@ -44,7 +57,7 @@ struct AwardsView: View {
                             VStack(spacing: 10) {
                                 HStack {
                                     Button(action: {
-                                        
+                                        isProfile = true
                                     }) {
                                         Image(.profile)
                                             .resizable()
@@ -57,7 +70,7 @@ struct AwardsView: View {
                                         .frame(width: 120, height: 42)
                                     Spacer()
                                     Button(action: {
-                                        
+                                        isSet = true
                                     }) {
                                         Image(.settings)
                                             .resizable()
@@ -74,10 +87,10 @@ struct AwardsView: View {
                                             RoundedRectangle(cornerRadius: 24)
                                                 .stroke(.white)
                                                 .overlay {
-                                                    Text("1000")
+                                                    Text("\(coins)")
                                                         .font(.custom("PaytoneOne-Regular", size: 18))
                                                         .foregroundStyle(Color(red: 253/255, green: 255/255, blue: 193/255))
-                                                        .offset(x: 8, y: -1)
+                                                        .offset(x: 11, y: -1)
                                                 }
                                         }
                                         .frame(width: 90, height: 31)
@@ -130,13 +143,15 @@ struct AwardsView: View {
                                                             Text("Progress: \(index.currentGoal)/\(index.goal)")
                                                                 .font(.custom("PaytoneOne-Regular", size: 10))
                                                                 .foregroundStyle(Color(red: 215/255, green: 211/255, blue: 222/255))
-                                                            
+
                                                             Spacer()
                                                             
-                                                            Text("\(index.goal / 100 * index.currentGoal)%")
+                                                            let progressPercent = index.goal != 0 ? Int(Double(index.currentGoal) / Double(index.goal) * 100) : 0
+                                                            Text("\(progressPercent)%")
                                                                 .font(.custom("PaytoneOne-Regular", size: 12))
                                                                 .foregroundStyle(Color(red: 215/255, green: 211/255, blue: 222/255))
                                                         }
+
                                                     }
                                                     .padding(.top, 5)
                                                     
@@ -149,17 +164,18 @@ struct AwardsView: View {
                                                             
                                                             Rectangle()
                                                                 .fill(LinearGradient(colors: [Color(red: 81/255, green: 161/255, blue: 255/255),
-                                                                                              Color(red: 195/255, green: 122/255, blue: 255/255)], startPoint: .leading, endPoint: .trailing))
-                                                                .frame(width: 100, height: 8)
+                                                                                             Color(red: 195/255, green: 122/255, blue: 255/255)], startPoint: .leading, endPoint: .trailing))
+                                                                .frame(width: geometry.size.width * min(CGFloat(index.currentGoal) / CGFloat(index.goal), 1.0), height: 8)
                                                                 .cornerRadius(10)
                                                         }
                                                     }
+                                                    
                                                     HStack(spacing: 5) {
                                                         Image(.coin)
                                                             .resizable()
                                                             .frame(width: 25, height: 25)
                                                         
-                                                        Text("Reward: 1000 coins")
+                                                        Text("Reward: \(index.award) coins")
                                                             .font(.custom("PaytoneOne-Regular", size: 12))
                                                             .foregroundStyle(Color(red: 253/255, green: 198/255, blue: 0/255))
                                                     }
@@ -180,9 +196,18 @@ struct AwardsView: View {
                         
                         Color.clear.frame(height: 60)
                     }
-                    .padding(.top)
+                    .padding(.top, UIScreen.main.bounds.width > 700 ? 50 : 20)
                 }
             }
+        }
+        .onAppear {
+              updateAchievementsProgress()
+          }
+        .fullScreenCover(isPresented: $isProfile) {
+            ProfileView()
+        }
+        .fullScreenCover(isPresented: $isSet) {
+            SettingsView()
         }
     }
 }

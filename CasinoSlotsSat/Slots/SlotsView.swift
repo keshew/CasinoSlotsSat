@@ -2,7 +2,16 @@ import SwiftUI
 
 struct SlotsView: View {
     @StateObject var slotsModel =  SlotsViewModel()
-
+    @State var isSlot1 = false
+    @State var isSlot2 = false
+    @State var isSlot3 = false
+    @State var isSlot4 = false
+    
+    @State var isProfile = false
+    @State var isSet = false
+    
+    @State var coins = UserDefaultsManager.shared.coins
+    
     var body: some View {
         ZStack {
             ZStack(alignment: .top) {
@@ -27,7 +36,7 @@ struct SlotsView: View {
                             VStack(spacing: 10) {
                                 HStack {
                                     Button(action: {
-                                        
+                                        isProfile = true
                                     }) {
                                         Image(.profile)
                                             .resizable()
@@ -40,7 +49,7 @@ struct SlotsView: View {
                                         .frame(width: 120, height: 42)
                                     Spacer()
                                     Button(action: {
-                                        
+                                        isSet = true
                                     }) {
                                         Image(.settings)
                                             .resizable()
@@ -57,10 +66,10 @@ struct SlotsView: View {
                                             RoundedRectangle(cornerRadius: 24)
                                                 .stroke(.white)
                                                 .overlay {
-                                                    Text("1000")
+                                                    Text("\(coins)")
                                                         .font(.custom("PaytoneOne-Regular", size: 18))
                                                         .foregroundStyle(Color(red: 253/255, green: 255/255, blue: 193/255))
-                                                        .offset(x: 8, y: -1)
+                                                        .offset(x: 11, y: -1)
                                                 }
                                         }
                                         .frame(width: 90, height: 31)
@@ -86,6 +95,7 @@ struct SlotsView: View {
                             HStack {
                                 
                                 Button(action: {
+                                    isSlot1 = true
                                 }) {
                                     Image(.slot1)
                                         .resizable()
@@ -94,7 +104,7 @@ struct SlotsView: View {
                                 }
                                 
                                 Button(action: {
-                                    
+                                    isSlot2 = true
                                 }) {
                                     Image(.slot2)
                                         .resizable()
@@ -106,6 +116,7 @@ struct SlotsView: View {
                             HStack {
                                 
                                 Button(action: {
+                                    isSlot3 = true
                                 }) {
                                     Image(.slot3)
                                         .resizable()
@@ -114,7 +125,7 @@ struct SlotsView: View {
                                 }
                                 
                                 Button(action: {
-                                    
+                                    isSlot4 = true
                                 }) {
                                     Image(.slot4)
                                         .resizable()
@@ -126,9 +137,27 @@ struct SlotsView: View {
                         
                         Color.clear.frame(height: 60)
                     }
-                    .padding(.top)
+                    .padding(.top, UIScreen.main.bounds.width > 700 ? 50 : 20)
                 }
             }
+        }
+        .fullScreenCover(isPresented: $isProfile) {
+            ProfileView()
+        }
+        .fullScreenCover(isPresented: $isSet) {
+            SettingsView()
+        }
+        .fullScreenCover(isPresented: $isSlot1) {
+            HookSlotsView()
+        }
+        .fullScreenCover(isPresented: $isSlot2) {
+            EgyptSlotsView()
+        }
+        .fullScreenCover(isPresented: $isSlot3) {
+            LuckySlotsView()
+        }
+        .fullScreenCover(isPresented: $isSlot4) {
+            PurpleSlotsView()
         }
     }
 }

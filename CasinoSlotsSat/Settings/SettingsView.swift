@@ -3,6 +3,8 @@ import SwiftUI
 struct SettingsView: View {
     @StateObject var settingsModel =  SettingsViewModel()
     @Environment(\.presentationMode) var presentationMode
+    @State var coins = UserDefaultsManager.shared.coins
+    
     var body: some View {
         ZStack {
             ZStack(alignment: .top) {
@@ -62,10 +64,10 @@ struct SettingsView: View {
                                             RoundedRectangle(cornerRadius: 24)
                                                 .stroke(.white)
                                                 .overlay {
-                                                    Text("1000")
+                                                    Text("\(coins)")
                                                         .font(.custom("PaytoneOne-Regular", size: 18))
                                                         .foregroundStyle(Color(red: 253/255, green: 255/255, blue: 193/255))
-                                                        .offset(x: 8, y: -1)
+                                                        .offset(x: 11, y: -1)
                                                 }
                                         }
                                         .frame(width: 90, height: 31)
@@ -129,7 +131,7 @@ struct SettingsView: View {
                                                                     
                                                                     Spacer()
                                                                     
-                                                                    Toggle("", isOn: $settingsModel.isMusicOn)
+                                                                    Toggle("", isOn: $settingsModel.isSoundOn)
                                                                         .toggleStyle(CustomToggleStyle())
                                                                         .frame(width: 48)
                                                                 }
@@ -182,7 +184,7 @@ struct SettingsView: View {
                         
                         Color.clear.frame(height: 60)
                     }
-                    .padding(.top)
+                    .padding(.top, UIScreen.main.bounds.width > 700 ? 50 : 20)
                 }
             }
         }
