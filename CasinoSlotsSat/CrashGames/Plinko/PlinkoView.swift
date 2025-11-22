@@ -199,16 +199,15 @@ class GameSpriteKit: SKScene, SKPhysicsContactDelegate {
             ball.size = CGSize(width: 12, height: 30)
             ball.position = CGPoint(x: size.width / 2,
                                     y: size.height / 1.15)
-            ball.physicsBody = SKPhysicsBody(circleOfRadius: ball.size.width / 5)
-            ball.physicsBody?.categoryBitMask = ballCategory
-            ball.physicsBody?.contactTestBitMask = obstacleCategory | ticketCategory
-            ball.physicsBody?.collisionBitMask = obstacleCategory | ticketCategory
-            ball.physicsBody?.restitution = 0.4
-            ball.physicsBody?.linearDamping = 0.5
-            ball.physicsBody?.friction = 0.1
-            ball.physicsBody?.isDynamic = true
-            ball.physicsBody?.allowsRotation = false
-            ball.physicsBody?.affectedByGravity = false
+        ball.physicsBody = SKPhysicsBody(circleOfRadius: ball.size.width / 3)
+        ball.physicsBody?.restitution = 0.7
+        ball.physicsBody?.friction = 0.0
+        ball.physicsBody?.linearDamping = 0.2
+        ball.physicsBody?.allowsRotation = true
+        ball.physicsBody?.affectedByGravity = false
+        ball.physicsBody?.categoryBitMask = ballCategory
+        ball.physicsBody?.contactTestBitMask = obstacleCategory | ticketCategory
+        ball.physicsBody?.collisionBitMask = obstacleCategory | ticketCategory
             
             addChild(ball)
             ballNodes.append(ball)
@@ -276,16 +275,15 @@ class GameSpriteKit: SKScene, SKPhysicsContactDelegate {
         ball.size = CGSize(width: 12, height: 30)
         ball.position = CGPoint(x: size.width / 2 ,
                                 y: size.height / 1.15)
-        ball.physicsBody = SKPhysicsBody(circleOfRadius: ball.size.width / 5)
+        ball.physicsBody = SKPhysicsBody(circleOfRadius: ball.size.width / 3)
+        ball.physicsBody?.restitution = 0.7
+        ball.physicsBody?.friction = 0.0
+        ball.physicsBody?.linearDamping = 0.2
+        ball.physicsBody?.allowsRotation = true
+        ball.physicsBody?.affectedByGravity = false
         ball.physicsBody?.categoryBitMask = ballCategory
         ball.physicsBody?.contactTestBitMask = obstacleCategory | ticketCategory
         ball.physicsBody?.collisionBitMask = obstacleCategory | ticketCategory
-        ball.physicsBody?.restitution = 0.4
-        ball.physicsBody?.linearDamping = 0.5
-        ball.physicsBody?.friction = 0.1
-        ball.physicsBody?.isDynamic = true
-        ball.physicsBody?.allowsRotation = false
-        ball.physicsBody?.affectedByGravity = false
         
         addChild(ball)
         ballNodes.append(ball)
